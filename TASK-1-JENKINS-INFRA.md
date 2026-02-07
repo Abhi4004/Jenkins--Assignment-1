@@ -1,0 +1,151 @@
+Task 1: Jenkins Infrastructure Setup
+High-Availability Jenkins Master–Agent Configuration
+Step 1: Jenkins Controller Setup
+
+Jenkins controller was installed and running on a local Ubuntu machine.
+
+Jenkins web UI was accessible on http://localhost:8080.
+
+Initial Jenkins setup and plugins installation were completed.
+
+Step 2: Provision Jenkins Agents on EC2
+
+Created two separate EC2 instances on AWS.
+
+Selected instance types such that:
+
+Agent 1 had normal resources.
+
+Agent 2 had limited resources (1 vCPU, 1 GB RAM) to simulate resource constraints.
+
+Opened port 22 (SSH) in the EC2 security group.
+
+Used the same SSH key pair for both instances.
+
+Step 3: Prepare EC2 Instances for Jenkins Agents
+
+On each EC2 instance:
+
+Connected using SSH:
+
+ssh -i key.pem ubuntu@<ec2-public-ip>
+
+
+Installed Java (required for Jenkins agent):
+
+sudo apt update
+sudo apt install -y openjdk-17-jdk
+
+
+Verified Java installation:
+
+java -version
+
+Step 4: Add SSH Credentials in Jenkins
+
+Navigated to:
+
+Manage Jenkins → Credentials → System → Global credentials → Add Credentials
+
+
+Added credentials with:
+
+Kind: SSH Username with private key
+
+Username: ubuntu
+
+Private Key: Entered directly (pasted contents of .pem file)
+
+ID: ec2-ssh-key
+
+Saved the credentials.
+
+Step 5: Configure Jenkins Agents (Nodes)
+
+For each EC2 instance:
+
+Navigated to:
+
+Manage Jenkins → Nodes → New Node
+
+
+Selected Permanent Agent.
+
+Configured node with:
+
+Remote root directory: /home/ubuntu
+
+Launch method: Launch agents via SSH
+
+Host: EC2 public IP
+
+Credentials: ec2-ssh-key
+
+Host Key Verification Strategy: Non verifying Verification Strategy
+
+Availability: Keep this agent online as much as possible
+
+Saved configuration and verified node status turned online (green).
+
+Step 6: Configure Executors for Load Balancing
+
+Configured executors as follows:
+
+Jenkins-Agent-1: 2 executors
+
+Jenkins-Agent-2: 1 executor (low resource agent)
+
+Set Built-In Node executors to 0 to prevent jobs from running on the controller.
+
+Step 7: Enable Concurrent Builds
+
+Created a Freestyle Jenkins job.
+
+Enabled:
+
+Execute concurrent builds if necessary
+
+
+Ensured the job was not restricted to a single node.
+
+Step 8: Test Load Balancing Across Agents
+
+Added a build step:
+
+echo "Hello, World!!"
+echo "Running on node: $NODE_NAME"
+hostname
+sleep 100
+
+
+Triggered multiple builds simultaneously.
+
+Verified that builds were distributed across both agents based on available executors.
+
+Step 9: Verify Resource Constraint Behavior
+
+Observed that the low-resource agent processed fewer concurrent jobs due to having only one executor.
+
+Additional builds were scheduled on the higher-capacity agent automatically.
+
+Step 10: Verify Auto-Reconnect of Agents
+
+Stopped one EC2 agent instance.
+
+Jenkins marked the node as offline.
+
+Restarted the EC2 instance.
+
+Jenkins automatically reconnected the agent without manual intervention.
+
+Final Outcome
+
+Jenkins controller successfully managed multiple agents.
+
+Jobs were load balanced automatically using executors.
+
+One agent simulated resource constraints.
+
+Agents auto-reconnected after going offline.
+
+High-availability and fault-tolerant Jenkins setup was achieved.
