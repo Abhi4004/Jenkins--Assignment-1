@@ -1,0 +1,31 @@
+Step 1: Protect Administrative Access (SSH)
+
+SSH access (port 22) was explicitly allowed to ensure secure and uninterrupted administrative access to the Jenkins controller while managing firewall rules.
+
+Step 2: Restrict Jenkins UI to Trusted Network
+
+Jenkins UI (port 8080) was allowed only from the internal UTM shared network subnet (192.168.64.0/24), ensuring access is limited to trusted systems.
+
+Step 3: Block Public and IPv6 Access
+
+All other inbound access to Jenkins on port 8080, including IPv6 traffic, was explicitly denied to prevent unauthorized or public access to the Jenkins UI.
+
+============================================
+
+RBAC: 
+
+Step 1: Enable Matrix-Based Authorization
+Matrix Authorization Strategy was enabled in Jenkins to enforce role-based access control with fine-grained permission management.
+
+Step 2: Configure Roles and Permissions
+
+Three roles were created:
+Admin – Full access to Jenkins system configuration, jobs, agents, and credentials.
+Developer – Allowed to read jobs and trigger builds but restricted from editing or deleting jobs.
+Auditor – Granted read-only access to jobs and views, with no permission to build, configure, or delete jobs.
+
+Step 3: Validate Access Using Auditor Login
+The auditor user was used to log in to Jenkins and verify permissions. As expected, the auditor could view jobs and build history but did not see any options to edit, configure, or delete jobs, confirming that RBAC restrictions were correctly enforced as shown in the screenshot.
+
+Final Outcome
+RBAC successfully enforced least-privilege access, ensuring that auditors have visibility without modification rights, while administrative and development responsibilities remain securely separated.
