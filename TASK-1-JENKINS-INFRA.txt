@@ -47,8 +47,8 @@ Saved configuration and verified node status turned online (green).
 Step 6: Configure Executors for Load Balancing
 Configured executors as follows:
 
-Jenkins-Agent-1: 2 executors
-Jenkins-Agent-2: 1 executor (low resource agent)
+Jenkins-Agent-1: 1 executor
+Jenkins-Agent-2: 1 executor
 Set Built-In Node executors to 0 to prevent jobs from running on the controller.
 
 Step 7: Enable Concurrent Builds
@@ -66,7 +66,7 @@ sleep 100
 Triggered multiple builds simultaneously. Verified that builds were distributed across both agents based on available executors.
 
 Step 9: Verify Resource Constraint Behavior
-Observed that the low-resource agent processed fewer concurrent jobs due to having only one executor. Additional builds were scheduled on the higher-capacity agent automatically.
+Observed that the one agent processed fewer concurrent jobs due to having only one executor. Additional builds were scheduled on the higher-capacity agent automatically.
 
 Step 10: Verify Auto-Reconnect of Agents
 Stopped one EC2 agent instance. Jenkins marked the node as offline. Restarted the EC2 instance. Jenkins automatically reconnected the agent without manual intervention.
